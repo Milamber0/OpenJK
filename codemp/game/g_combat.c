@@ -25,6 +25,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "b_local.h"
 #include "bg_saga.h"
+#include "g_tarascii_main.h"
 
 extern int G_ShipSurfaceForSurfName( const char *surfaceName );
 extern qboolean G_FlyVehicleDestroySurface( gentity_t *veh, int surface );
@@ -591,6 +592,11 @@ void TossClientItems( gentity_t *self ) {
 	int			i;
 	gentity_t	*drop;
 
+	//TarasciiMadness turned off weapons dropping on my gametype.
+#if defined(TARASCIIMADNESS)
+	return;
+#else	
+
 	if (level.gametype == GT_SIEGE)
 	{ //just don't drop anything then
 		return;
@@ -651,6 +657,7 @@ void TossClientItems( gentity_t *self ) {
 			}
 		}
 	}
+	#endif
 }
 
 
@@ -5526,6 +5533,41 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 			targ->enemy = attacker;
 			targ->die (targ, inflictor, attacker, take, mod);
 			G_ActivateBehavior( targ, BSET_DEATH );
+
+#ifdef TARASCIIMADNESS
+			if (targ->client)
+			{
+				if (targ->client->sess.sessionTeam == TEAM_RED && damage > targ->client->ps.stats[STAT_HEALTH] && targ->playerState->duelTime)
+				{
+					gentity_t *barrel;
+					float damage, range;
+
+					if (targ == inflictor)
+					{
+						damage = 600.0f;
+						range = 300.0f;
+					}
+					else
+					{
+						damage = 100.0f;
+						range = 100.0f;
+					}
+
+					targ->playerState->duelTime = 0;
+					G_RadiusDamage( targ->r.currentOrigin, targ, damage, range, targ, NULL, MOD_THERMAL );
+					G_PlayEffect(EFFECT_EXPLOSION_DETPACK, targ->r.currentOrigin, targ->r.currentAngles );
+
+					targ->client->ps.eFlags |= EF_NODRAW;
+					targ->client->noCorpse = qtrue;
+
+					barrel = &g_entities[targ->playerState->duelIndex];	
+					G_FreeEntity(barrel); //remove barrel corpse
+
+					Tarascii_ResetEplodeClick(targ->s.clientNum);
+				}
+			}
+#endif
+
 			return;
 		}
 		else

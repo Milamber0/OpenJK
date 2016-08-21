@@ -536,6 +536,17 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 			i++;
 		}
 	}
+
+	//TarasciiMadness Adding force Seeing and level to barrel player upon spawn.
+	if (ent->client->sess.sessionTeam == TEAM_RED)
+	{
+		ent->client->ps.fd.forcePowersKnown |= (1<<FP_SEE);
+		ent->client->ps.fd.forcePowerBaseLevel[FP_SEE] = ent->client->ps.fd.forcePowerLevel[FP_SEE] = FORCE_LEVEL_3;
+	}
+	else
+	{
+		ent->client->ps.fd.forcePowersKnown &= ~(1<<FP_SEE);
+	}
 }
 
 extern qboolean BG_InKnockDown( int anim ); //bg_pmove.c
@@ -950,7 +961,8 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 		}
 		else if (self->client->ps.fd.forcePowerLevel[FP_TELEPATHY] == FORCE_LEVEL_3)
 		{
-			duration = 30000;
+			//duration = 30000;
+			duration = (timelimit.integer*1000*60); //TarasciiMadness make sure seeing lasts potentially as long as a whole round.
 		}
 		else //shouldn't get here
 		{
@@ -1038,7 +1050,7 @@ void WP_ForcePowerStart( gentity_t *self, forcePowers_t forcePower, int override
 		}
 		else if (self->client->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_3)
 		{
-			duration = 30000;
+			//duration = 30000;
 		}
 		else //shouldn't get here
 		{
@@ -1489,7 +1501,7 @@ void ForceSeeing( gentity_t *self )
 	if (self->client->ps.forceAllowDeactivateTime < level.time &&
 		(self->client->ps.fd.forcePowersActive & (1 << FP_SEE)) )
 	{
-		WP_ForcePowerStop( self, FP_SEE );
+		//WP_ForcePowerStop( self, FP_SEE ); //TarasciiMadness force seeing cant be turned off manually.
 		return;
 	}
 
@@ -1502,8 +1514,8 @@ void ForceSeeing( gentity_t *self )
 
 	WP_ForcePowerStart( self, FP_SEE, 0 );
 
-	G_Sound( self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/see.wav") );
-	G_Sound( self, TRACK_CHANNEL_5, seeLoopSound );
+	//G_Sound( self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/see.wav") );	//TarasciiMadness force seeing sound disabled
+	//G_Sound( self, TRACK_CHANNEL_5, seeLoopSound );
 }
 
 void ForceProtect( gentity_t *self )
@@ -5403,7 +5415,8 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	if ( !(self->client->ps.fd.forcePowersActive & (1<<FP_LIGHTNING)) )
 		self->client->force.lightningDebounce = level.time;
 
-	if ( (!self->client->ps.fd.forcePowersActive || self->client->ps.fd.forcePowersActive == (1 << FP_DRAIN)) &&
+	//TarasciiMadness changed the below check to check (1 << FP_SEE) instead of (1 << FP_DRAIN) since drain is not used in this mod, now seeing can run and recover force at the same time.
+	if ( (!self->client->ps.fd.forcePowersActive || self->client->ps.fd.forcePowersActive == (1 << FP_SEE)) &&
 			!self->client->ps.saberInFlight && (self->client->ps.weapon != WP_SABER || !BG_SaberInSpecial(self->client->ps.saberMove)) )
 	{//when not using the force, regenerate at 1 point per half second
 		while ( self->client->ps.fd.forcePowerRegenDebounceTime < level.time )
@@ -5476,6 +5489,8 @@ powersetcheck:
 qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, int hitLoc )
 {
 	int	dodgeAnim = -1;
+
+	return qfalse; //TarasciiMadness, never dodge any shots.
 
 	if ( !self || !self->client || self->health <= 0 )
 	{

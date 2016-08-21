@@ -23,6 +23,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "g_local.h"
+#include "g_tarascii_main.h"
 
 /*
 =======================================================================
@@ -277,6 +278,8 @@ void G_WriteSessionData( void ) {
 	int		i;
 
 	trap->Cvar_Set( "session", va("%i", level.gametype) );
+
+	Tarascii_WriteSessionData();
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		if ( level.clients[i].pers.connected == CON_CONNECTED ) {

@@ -235,7 +235,7 @@ extern qboolean BG_ParseLiteral( const char **data, const char *string );
 //
 // NPC parameters file : scripts/NPCs.cfg
 //
-#define MAX_NPC_DATA_SIZE 0x40000
+#define MAX_NPC_DATA_SIZE 0x80000//0x40000 //TarasciiMadness .veh fix, seems to have been implemented by openJK already.
 char	NPCParms[MAX_NPC_DATA_SIZE];
 
 /*

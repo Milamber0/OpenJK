@@ -24,6 +24,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 #include "bg_saga.h"
+#include "g_tarascii_main.h"
 
 #include "ui/menudef.h"			// for the voice chats
 
@@ -532,7 +533,12 @@ Cmd_Kill_f
 =================
 */
 void Cmd_Kill_f( gentity_t *ent ) {
+	//TarasciiMadness turned off kill command in my gametype.
+#if defined(TARASCIIMADNESS)
+	trap->SendServerCommand( ent-g_entities, va("print \"Suicide is not allowed in this gametype.\n\"") );
+#else
 	G_Kill( ent );
+#endif
 }
 
 void Cmd_KillOther_f( gentity_t *ent )
@@ -654,6 +660,12 @@ void SetTeam( gentity_t *ent, char *s ) {
 	clientNum = client - level.clients;
 	specClient = 0;
 	specState = SPECTATOR_NOT;
+
+	//TarasciiMadness overwriting how teams are set.
+#if defined(TARASCIIMADNESS)
+	team = Tarascii_GetTeam(ent);
+#else
+
 	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE; // SPECTATOR_SCOREBOARD disabling this for now since it is totally broken on client side
@@ -764,6 +776,8 @@ void SetTeam( gentity_t *ent, char *s ) {
 		// force them to spectators if there aren't any spots free
 		team = TEAM_FREE;
 	}
+
+#endif
 
 	oldTeam = client->sess.sessionTeam;
 
@@ -972,6 +986,12 @@ Cmd_Team_f
 void Cmd_Team_f( gentity_t *ent ) {
 	int			oldTeam;
 	char		s[MAX_TOKEN_CHARS];
+
+	if (Tarascii_CanPlayerJoin() == qfalse)
+	{
+		trap->SendServerCommand(ent - g_entities, va("print \"You can't join the game yet.\n\""));
+		return;
+	}
 
 	oldTeam = ent->client->sess.sessionTeam;
 
@@ -3429,12 +3449,24 @@ void ClientCommand( int clientNum ) {
 	command_t	*command = NULL;
 
 	ent = g_entities + clientNum;
+
+	trap->Argv( 0, cmd, sizeof( cmd ) );
+
+	if(ent->client)
+	{
+		//TarasciiMadness The client can immediately send a plugin identification command to the server, 
+		// this happens before the client has moved to CON_CONNECTED. But it's safe to deal with this command here anyways.
+		if(strcmp(cmd, "tmPluginIdentify") == 0)
+		{
+			Tarascii_PluginIdentify(ent);
+			return;
+		}
+	}
+
 	if ( !ent->client || ent->client->pers.connected != CON_CONNECTED ) {
 		G_SecurityLogPrintf( "ClientCommand(%d) without an active connection\n", clientNum );
 		return;		// not fully in game yet
 	}
-
-	trap->Argv( 0, cmd, sizeof( cmd ) );
 
 	//rww - redirect bot commands
 	if ( strstr( cmd, "bot_" ) && AcceptBotCommand( cmd, ent ) )

@@ -157,7 +157,7 @@ weaponData_t weaponData[WP_NUM_WEAPONS] =
 		AMMO_POWERCELL,			//	int		ammoIndex;			// Index to proper ammo slot
 		5,						//	int		ammoLow;			// Count when ammo is low
 		5,						//	int		energyPerShot;		// Amount of energy used per shot
-		600,					//	int		fireTime;			// Amount of time between firings
+		1500,					//	int		fireTime;			// Amount of time between firings		//TarasciiMadness 600 to 1500 firetime disruptor.
 		8192,					//	int		range;				// Range of weapon
 		6,						//	int		altEnergyPerShot;	// Amount of energy used for alt-fire
 		1300,					//	int		altFireTime;		// Amount of time between alt-firings

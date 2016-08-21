@@ -28,6 +28,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "g_nav.h"
 #include "bg_saga.h"
 #include "b_local.h"
+#include "g_tarascii_main.h"
 
 level_locals_t	level;
 
@@ -179,6 +180,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	trap->Cvar_Set("RMG", "0");
 	RMG.integer = 0;
 
+	//TarasciiMadness, forcing gametype to team
+	trap->Cvar_Set("g_gametype", "6");
+
 	//Clean up any client-server ghoul2 instance attachments that may still exist exe-side
 	trap->G2API_CleanEntAttachments();
 
@@ -202,6 +206,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	G_ProcessIPBans();
 
 	G_InitMemory();
+
+	Tarascii_Init(levelTime);
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -423,6 +429,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 			SP_info_jedimaster_start( ent );
 		}
 	}
+	//TarasciiMadness - Spawn Barrels.
+	Tarascii_BarrelPlacement();
 }
 
 
@@ -1804,7 +1812,8 @@ void CheckIntermissionExit( void ) {
 	{ //in duel, we have different behaviour for between-round intermissions
 		if ( level.time > level.intermissiontime + 4000 )
 		{ //automatically go to next after 4 seconds
-			ExitLevel();
+			//TarasciiMadness overwrite map_restart for intermission.
+			Tarascii_ExitCheck();
 			return;
 		}
 
@@ -1839,7 +1848,8 @@ void CheckIntermissionExit( void ) {
 
 	if (d_noIntermissionWait.integer)
 	{ //don't care who wants to go, just go.
-		ExitLevel();
+		//TarasciiMadness overwrite map_restart for intermission.
+		Tarascii_ExitCheck();
 		return;
 	}
 
@@ -1851,7 +1861,8 @@ void CheckIntermissionExit( void ) {
 
 	// if everyone wants to go, go now
 	if ( !notReady ) {
-		ExitLevel();
+		//TarasciiMadness overwrite map_restart for intermission.
+		Tarascii_ExitCheck();
 		return;
 	}
 
@@ -1867,7 +1878,9 @@ void CheckIntermissionExit( void ) {
 		return;
 	}
 
-	ExitLevel();
+	//TarasciiMadness overwrite map_restart for intermission.
+	Tarascii_ExitCheck();
+	return;
 }
 
 /*
@@ -2921,6 +2934,7 @@ void G_RunFrame( int levelTime ) {
 	void		*timer_GameChecks;
 	void		*timer_Queues;
 #endif
+	Tarascii_RunFrame();
 
 	if (level.gametype == GT_SIEGE &&
 		g_siegeRespawn.integer &&
@@ -3271,7 +3285,7 @@ void G_RunFrame( int levelTime ) {
 			{ //using cloak, drain battery
 				if (ent->client->cloakDebReduce < level.time)
 				{
-					ent->client->ps.cloakFuel--;
+					//ent->client->ps.cloakFuel--; //TarasciiMadness cloak fuel disabled.
 
 					if (ent->client->ps.cloakFuel <= 0)
 					{ //turn it off

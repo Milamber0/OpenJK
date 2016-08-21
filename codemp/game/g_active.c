@@ -24,6 +24,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include "g_local.h"
 #include "bg_saga.h"
+#include "g_tarascii_main.h"
 
 extern void Jedi_Cloak( gentity_t *self );
 extern void Jedi_Decloak( gentity_t *self );
@@ -828,6 +829,8 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 		if ( client->ps.stats[STAT_ARMOR] > client->ps.stats[STAT_MAX_HEALTH] ) {
 			client->ps.stats[STAT_ARMOR]--;
 		}
+		//TarasciiMadness barrel respawn.
+		Tarascii_RespawnBarrels();
 	}
 }
 
@@ -2059,6 +2062,8 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
+	Tarascii_ClientThink(ent);
+
 	// spectators don't do much
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR || client->tempSpectate >= level.time ) {
 		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ) {
@@ -3055,6 +3060,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	Pmove (&pmove);
+	Tarascii_BarrelBound(ent);
 
 	if (ent->client->solidHack)
 	{
@@ -3459,6 +3465,14 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( client->ps.stats[STAT_HEALTH] <= 0
 		&& !(client->ps.eFlags2&EF2_HELD_BY_MONSTER)//can't respawn while being eaten
 		&& ent->s.eType != ET_NPC ) {
+
+#ifdef TARASCIIMADNESS
+			if (client->sess.sessionTeam == TEAM_BLUE)
+			{
+				SetTeamQuick(ent, TEAM_RED, qfalse);
+			}
+#endif
+
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime && !gDoSlowMoDuel ) {
 			// forcerespawn is to prevent users from waiting out powerups
@@ -3729,7 +3743,11 @@ void ClientEndFrame( gentity_t *ent ) {
 	// turn off any expired powerups
 	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
 		if ( ent->client->ps.powerups[ i ] < level.time ) {
-			ent->client->ps.powerups[ i ] = 0;
+			//TarasciiMadness avoid cloak being automatically turned off.
+			if (i != PW_CLOAKED)
+			{
+				ent->client->ps.powerups[ i ] = 0;
+			}
 		}
 	}
 

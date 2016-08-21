@@ -11017,10 +11017,11 @@ stillDoSaber:
 				legs.shaderRGBA[1] = 50;
 				legs.shaderRGBA[2] = 50;
 				break;
-			case TEAM_BLUE:
-				legs.shaderRGBA[0] = 75;
-				legs.shaderRGBA[1] = 75;
+			case TEAM_BLUE:					//TarasciiMadness custom seeing colors
+				legs.shaderRGBA[0] = 255;// 75;
+				legs.shaderRGBA[1] = 255;// 75;
 				legs.shaderRGBA[2] = 255;
+				legs.shaderRGBA[3] = 255;//extra
 				break;
 
 			default:
@@ -11053,7 +11054,8 @@ stillDoSaber:
 
 		legs.renderfx &= ~RF_RGB_TINT;
 		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
-		legs.customShader = cgs.media.sightShell;
+		//legs.customShader = cgs.media.sightShell;
+		legs.customShader = cgs.media.playerShieldDamage; //TarasciiMadness seeing effect change.
 
 		trap->R_AddRefEntityToScene( &legs );
 	}

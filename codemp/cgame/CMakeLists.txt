@@ -39,6 +39,7 @@ set(MPCGameGameFiles
 	"${MPDir}/game/bg_saber.c"
 	"${MPDir}/game/bg_saberLoad.c"
 	"${MPDir}/game/bg_saga.c"
+	"${MPDir}/game/bg_tarascii_move.c"
 	"${MPDir}/game/bg_slidemove.c"
 	"${MPDir}/game/bg_vehicleLoad.c"
 	"${MPDir}/game/bg_weapons.c"
@@ -49,6 +50,7 @@ set(MPCGameGameFiles
 	"${MPDir}/game/bg_local.h"
 	"${MPDir}/game/bg_public.h"
 	"${MPDir}/game/bg_saga.h"
+	"${MPDir}/game/bg_tarascii_move.h"
 	"${MPDir}/game/bg_weapons.h"
 	"${MPDir}/game/surfaceflags.h"
 	)
@@ -104,6 +106,7 @@ set(MPCGameCommonFiles
 	"${MPDir}/qcommon/q_shared.c"
 	"${MPDir}/qcommon/disablewarnings.h"
 	"${MPDir}/qcommon/q_shared.h"
+	"${MPDir}/qcommon/q_tarascii_shared.h"
 	"${MPDir}/qcommon/qfiles.h"
 	"${MPDir}/qcommon/tags.h"
 	

@@ -28,6 +28,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "bg_public.h"
 #include "bg_local.h"
 #include "ghoul2/G2.h"
+#include "bg_tarascii_move.h"
 
 #ifdef _GAME
 	#include "g_local.h"
@@ -1064,10 +1065,10 @@ static void PM_Friction( void ) {
 		drop += speed*pm_waterfriction*pm->waterlevel*pml.frametime;
 	}
 	// If on a client then there is no friction
-	else if ( pm->ps->groundEntityNum < MAX_CLIENTS )
-	{
-		drop = 0;
-	}
+	//else if ( pm->ps->groundEntityNum < MAX_CLIENTS ) //Comment start
+	//{
+	//	drop = 0;		//TarasciiMadness turn on friction on clients / turn off headslide.
+	//}	//comment end
 
 	if ( pm->ps->pm_type == PM_SPECTATOR || pm->ps->pm_type == PM_FLOAT )
 	{
@@ -1101,7 +1102,7 @@ Handles user intended acceleration
 */
 static void PM_Accelerate( vec3_t wishdir, float wishspeed, float accel )
 {
-	if (pm->gametype != GT_SIEGE
+	if (pm->gametype != GT_TEAM	//TarasciiMadness change from GT_SIEGE to GT_TEAM to turn off bunnyhopping in my mod.
 		|| pm->ps->m_iVehicleNum
 		|| pm->ps->clientNum >= MAX_CLIENTS
 		|| pm->ps->pm_type != PM_NORMAL)
@@ -8084,12 +8085,12 @@ void PM_AdjustAttackStates( pmove_t *pmove )
 			// We just pressed the alt-fire key
 			if ( !pmove->ps->zoomMode && pmove->ps->pm_type != PM_DEAD )
 			{
-				// not already zooming, so do it now
-				pmove->ps->zoomMode = 1;
-				pmove->ps->zoomLocked = qfalse;
-				pmove->ps->zoomFov = 80.0f;//cg_fov.value;
-				pmove->ps->zoomLockTime = pmove->cmd.serverTime + 50;
-				PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
+				//// not already zooming, so do it now	//TarasciiMadness turn zoom off client and server.
+				//pmove->ps->zoomMode = 1;
+				//pmove->ps->zoomLocked = qfalse;
+				//pmove->ps->zoomFov = 80.0f;//cg_fov.value;
+				//pmove->ps->zoomLockTime = pmove->cmd.serverTime + 50;
+				//PM_AddEvent(EV_DISRUPTOR_ZOOMSOUND);
 			}
 			else if (pmove->ps->zoomMode == 1 && pmove->ps->zoomLockTime < pmove->cmd.serverTime)
 			{ //check for == 1 so we can't turn binoculars off with disruptor alt fire
@@ -11165,6 +11166,8 @@ void PmoveSingle (pmove_t *pmove) {
 	{ //riding a vehicle, see if we should do some anim overrides
 		PM_VehicleWeaponAnimate();
 	}
+
+	Tarascii_BarrelMove(pmove->ps);
 }
 
 

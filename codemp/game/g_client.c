@@ -25,11 +25,15 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "g_local.h"
 #include "ghoul2/G2.h"
 #include "bg_saga.h"
+#include "g_tarascii_main.h"
 
 // g_client.c -- client functions that don't happen every frame
 
-static vec3_t	playerMins = {-15, -15, DEFAULT_MINS_2};
-static vec3_t	playerMaxs = {15, 15, DEFAULT_MAXS_2};
+//static vec3_t	playerMins = {-15, -15, DEFAULT_MINS_2};
+//static vec3_t	playerMaxs = {15, 15, DEFAULT_MAXS_2};
+
+static vec3_t	playerMins = {-65, -65, DEFAULT_MINS_2};
+static vec3_t	playerMaxs = {65, 65, DEFAULT_MAXS_2};
 
 extern int g_siegeRespawnCheck;
 
@@ -688,60 +692,97 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 	float		dist;
 	float		list_dist[MAX_SPAWN_POINTS];
 	gentity_t	*list_spot[MAX_SPAWN_POINTS];
-	int			numSpots, rnd, i, j;
+	int			numSpots, rnd, i, j, teamCheck;
+
 
 	numSpots = 0;
 	spot = NULL;
 
-	//in Team DM, look for a team start spot first, if any
-	if ( level.gametype == GT_TEAM
-		&& team != TEAM_FREE
-		&& team != TEAM_SPECTATOR )
+	for (teamCheck = 3; teamCheck > 0; teamCheck--)		//TarasciiMadness added support for different team spawnpoints by doing a forloop teamCheck and switch case to assign correct classnames.
 	{
-		char *classname = NULL;
-		if ( team == TEAM_RED )
+		//in Team DM, look for a team start spot first, if any
+		if ( level.gametype == GT_TEAM
+			&& team != TEAM_FREE
+			&& team != TEAM_SPECTATOR )
 		{
-			classname = "info_player_start_red";
-		}
-		else
-		{
-			classname = "info_player_start_blue";
-		}
-		while ((spot = G_Find (spot, FOFS(classname), classname)) != NULL) {
-			if ( SpotWouldTelefrag( spot ) ) {
-				continue;
-			}
-
-			if(((spot->flags & FL_NO_BOTS) && isbot) ||
-			   ((spot->flags & FL_NO_HUMANS) && !isbot))
+			char *classname = NULL;
+			switch (teamCheck)
 			{
-				// spot is not for this human/bot player
-				continue;
+			case 1:
+				if ( team == TEAM_RED )
+				{
+					classname = "info_player_siegeteam1";
+				}
+				else
+				{
+					classname = "info_player_siegeteam2";
+				}
+				break;
+			case 2:
+				if ( team == TEAM_RED )
+				{
+					classname = "team_CTF_redplayer";
+				}
+				else
+				{
+					classname = "team_CTF_blueplayer";
+				}
+				break;
+			default:
+			case 3:
+				if ( team == TEAM_RED )
+				{
+					classname = "info_player_start_red";
+				}
+				else
+				{
+					classname = "info_player_start_blue";
+				}
+				break;
 			}
+			while ((spot = G_Find (spot, FOFS(classname), classname)) != NULL) {
+				if ( SpotWouldTelefrag( spot ) ) {
+					continue;
+				}
 
-			VectorSubtract( spot->s.origin, avoidPoint, delta );
-			dist = VectorLength( delta );
-			for (i = 0; i < numSpots; i++) {
-				if ( dist > list_dist[i] ) {
-					if ( numSpots >= MAX_SPAWN_POINTS )
-						numSpots = MAX_SPAWN_POINTS-1;
-					for (j = numSpots; j > i; j--) {
-						list_dist[j] = list_dist[j-1];
-						list_spot[j] = list_spot[j-1];
+				if(((spot->flags & FL_NO_BOTS) && isbot) ||
+					((spot->flags & FL_NO_HUMANS) && !isbot))
+				{
+					// spot is not for this human/bot player
+					continue;
+				}
+
+				VectorSubtract( spot->s.origin, avoidPoint, delta );
+				dist = VectorLength( delta );
+				for (i = 0; i < numSpots; i++) {
+					if ( dist > list_dist[i] ) {
+						if ( numSpots >= MAX_SPAWN_POINTS )
+							numSpots = MAX_SPAWN_POINTS-1;
+						for (j = numSpots; j > i; j--) {
+							list_dist[j] = list_dist[j-1];
+							list_spot[j] = list_spot[j-1];
+						}
+						list_dist[i] = dist;
+						list_spot[i] = spot;
+						numSpots++;
+						break;
 					}
-					list_dist[i] = dist;
-					list_spot[i] = spot;
+				}
+				if (i >= numSpots && numSpots < MAX_SPAWN_POINTS) {
+					list_dist[numSpots] = dist;
+					list_spot[numSpots] = spot;
 					numSpots++;
-					break;
 				}
 			}
-			if (i >= numSpots && numSpots < MAX_SPAWN_POINTS) {
-				list_dist[numSpots] = dist;
-				list_spot[numSpots] = spot;
-				numSpots++;
-			}
+		}
+
+		if (numSpots > 0)
+		{
+			break;
 		}
 	}
+
+
 
 	if ( !numSpots )
 	{//couldn't find any of the above
@@ -2418,6 +2459,13 @@ char *ClientConnect( int clientNum, qboolean firstTime, qboolean isBot ) {
 				tmpIP[NET_ADDRSTRMAXLEN] = {0},
 				guid[33] = {0};
 
+	if (!firstTime)
+	{
+		Tarascii_ReadSessionData(); //TarasciiMadness Read Sessiondata;
+	}
+
+	firstTime = qtrue;//TarasciiMadness Overwrite firstTime
+
 	ent = &g_entities[ clientNum ];
 
 	ent->s.number = clientNum;
@@ -2611,6 +2659,16 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 	int			spawnCount;
 
 	ent = g_entities + clientNum;
+
+	//TarasciiMadness People won't be able to manually join the game, the gamemmode will take care of that.
+	// Unless we want to debug it, and then we can use /tm_debugAllowJoin 1
+	if (Tarascii_CanPlayerJoin() == qfalse)
+	{
+		// Force them to join spectate.
+		ent->client->sess.sessionTeam = TEAM_SPECTATOR;
+	}
+
+	Tarascii_ClientBegin(ent);
 
 	if ((ent->r.svFlags & SVF_BOT) && level.gametype >= GT_TEAM)
 	{
@@ -3731,11 +3789,13 @@ void ClientSpawn(gentity_t *ent) {
 	G_SetOrigin( ent, spawn_origin );
 	VectorCopy( spawn_origin, client->ps.origin );
 
+	Tarascii_ClientSpawn(ent);
+
 	// the respawned flag will be cleared after the attack and jump keys come up
 	client->ps.pm_flags |= PMF_RESPAWNED;
 
 	trap->GetUsercmd( client - level.clients, &ent->client->pers.cmd );
-	SetClientViewAngle( ent, spawn_angles );
+	//SetClientViewAngle( ent, spawn_angles );	//TarasciiMadness turned off this SetClientViewAngle so that it's set correctly in Tarascii_ClientSpawn.
 	// don't allow full run speed for a bit
 	client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	client->ps.pm_time = 100;
@@ -3781,8 +3841,12 @@ void ClientSpawn(gentity_t *ent) {
 			// positively link the client, even if the command times are weird
 			VectorCopy(ent->client->ps.origin, ent->r.currentOrigin);
 
-			tent = G_TempEntity(ent->client->ps.origin, EV_PLAYER_TELEPORT_IN);
-			tent->s.clientNum = ent->s.clientNum;
+			if (ent->client->sess.sessionTeam == TEAM_BLUE)	//TarasciiMadness Remove Spawn Effect
+			{
+				tent = G_TempEntity(ent->client->ps.origin, EV_PLAYER_TELEPORT_IN);
+				tent->s.clientNum = ent->s.clientNum;
+			}
+
 
 			trap->LinkEntity ((sharedEntity_t *)ent);
 		}
@@ -3903,6 +3967,8 @@ void ClientDisconnect( int clientNum ) {
 	// cleanup if we are kicking a bot that
 	// hasn't spawned yet
 	G_RemoveQueuedBotBegin( clientNum );
+
+	Tarascii_Disconnect(clientNum);	//TarasciiMadness Disconnect function call.
 
 	ent = g_entities + clientNum;
 	if ( !ent->client || ent->client->pers.connected == CON_DISCONNECTED ) {

@@ -207,7 +207,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 
 	// use temp events at source and destination to prevent the effect
 	// from getting dropped by a second player event
-	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
+	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR && player->client->sess.sessionTeam != TEAM_RED ) { //TarasciiMadness added && player->client->sess.sessionTeam != TEAM_RED to remove effect on barrels.
 		tent = G_TempEntity( player->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = player->s.clientNum;
 
@@ -219,12 +219,13 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 	trap->UnlinkEntity ((sharedEntity_t *)player);
 
 	VectorCopy ( origin, player->client->ps.origin );
-	player->client->ps.origin[2] += 1;
+	//player->client->ps.origin[2] += 1; //TarasciiMadness remove the tiny jump that happens after a teleport.
 
 	// spit the player out
 	if ( !noAngles ) {
 		AngleVectors( angles, player->client->ps.velocity, NULL, NULL );
-		VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
+		//VectorScale( player->client->ps.velocity, 400, player->client->ps.velocity );
+		VectorScale( player->client->ps.velocity, 0, player->client->ps.velocity );	//TarasciiMadness remove the speed out of a teleporter.
 		player->client->ps.pm_time = 160;		// hold time
 		player->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 
@@ -237,7 +238,7 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles ) {
 
 	// kill anything at the destination
 	if ( player->client->sess.sessionTeam != TEAM_SPECTATOR ) {
-		G_KillBox (player);
+		//G_KillBox (player); //TarasciiMadness dont kill people at teleport destination.
 	}
 
 	// save results of pmove

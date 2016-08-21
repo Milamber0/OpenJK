@@ -112,6 +112,8 @@ set(MPGameGameFiles
 	"${MPDir}/game/NPC_stats.c"
 	"${MPDir}/game/NPC_utils.c"
 	"${MPDir}/game/SpeederNPC.c"
+	"${MPDir}/game/g_tarascii_main.c"
+	"${MPDir}/game/bg_tarascii_move.c"
 	"${MPDir}/game/tri_coll_test.c"
 	"${MPDir}/game/w_force.c"
 	"${MPDir}/game/w_saber.c"
@@ -139,6 +141,8 @@ set(MPGameGameFiles
 	"${MPDir}/game/say.h"
 	"${MPDir}/game/surfaceflags.h"
 	"${MPDir}/game/teams.h"
+	"${MPDir}/game/g_tarascii_main.h"
+	"${MPDir}/game/bg_tarascii_move.h"
 	"${MPDir}/game/w_saber.h"
 	)
 source_group("game" FILES ${MPGameGameFiles})
@@ -148,6 +152,7 @@ set(MPGameCommonFiles
 	"${MPDir}/qcommon/q_shared.c"
 	"${MPDir}/qcommon/disablewarnings.h"
 	"${MPDir}/qcommon/q_shared.h"
+	"${MPDir}/qcommon/q_tarascii_shared.h"
 	"${MPDir}/qcommon/tags.h"
 	
 	${SharedCommonFiles}

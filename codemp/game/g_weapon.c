@@ -577,7 +577,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	traces = 0;
 	while ( traces < 10 )
 	{//need to loop this in case we hit a Jedi who dodges the shot
-		if (d_projectileGhoul2Collision.integer)
+		if (d_projectileGhoul2Collision.integer)	//TarasciiMadness Changed this so that i do both traces, first this one and then the other one if this one doesn't hit anything.
 		{
 			trap->Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT, qfalse, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
 		}
@@ -587,6 +587,24 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 		}
 
 		traceEnt = &g_entities[tr.entityNum];
+
+		if (Q_stricmp(traceEnt->classname,"worldspawn") == 0)	//TarasciiMadness fix so that my red team player barrels can use a hitbox instead of a G2.
+		{
+			gentity_t	*tempEnt;
+			trace_t		trTemp;
+			
+			trap->Trace( &trTemp, start, NULL, NULL, end, ignore, MASK_SHOT, qfalse, 0, 0 );
+
+			tempEnt = &g_entities[trTemp.entityNum];
+			if (tempEnt->s.number < MAX_CLIENTS)
+			{
+				if (tempEnt->client->sess.sessionTeam == TEAM_RED)
+				{
+					traceEnt = tempEnt;
+					tr = trTemp;
+				}
+			}
+		}//TM edit end
 
 		if (d_projectileGhoul2Collision.integer && traceEnt->inuse && traceEnt->client)
 		{ //g2 collision checks -rww
@@ -671,6 +689,14 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 				ent->client->accuracy_hits++;
 			}
 
+			//TarasciiMadness have to check if it's hitting a client or not or else it crashes when hitting dropped bodies for example.
+			if (traceEnt->client)
+			{
+				if (traceEnt->client->sess.sessionTeam == TEAM_RED)
+				{
+					damage = 200;	//TarasciiMadness sniper damage scale for hitting barrels.
+				}
+			}
 			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
 
 			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
@@ -3511,6 +3537,10 @@ void WP_FireMelee( gentity_t *ent, qboolean alt_fire )
 	VectorScale( maxs, -1, mins );
 
 	trap->Trace ( &tr, muzzlePunch, mins, maxs, end, ent->s.number, MASK_SHOT, qfalse, 0, 0 );
+	
+	Tarascii_ExplodeBarrel(ent);
+
+	
 
 	if (tr.entityNum != ENTITYNUM_NONE)
 	{ //hit something

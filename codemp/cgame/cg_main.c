@@ -24,6 +24,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 // cg_main.c -- initialization and primary entry point for cgame
 #include "cg_local.h"
+#include "qcommon/q_tarascii_shared.h"
 
 #include "ui/ui_shared.h"
 // display context for new ui stuff
@@ -2417,6 +2418,9 @@ Ghoul2 Insert Start
 //	memset( &cg, 0, sizeof( cg ) );
 	CG_Init_CG();
 	CG_InitItems();
+
+	// TarasciiMadness If you have a client make sure the server knows it.
+	trap->SendConsoleCommand(va("tmPluginIdentify %d", CLIENT_VERSION));
 
 	//create the global jetpack instance
 	CG_InitJetpackGhoul2();
