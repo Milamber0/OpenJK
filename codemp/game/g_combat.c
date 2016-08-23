@@ -593,10 +593,8 @@ void TossClientItems( gentity_t *self ) {
 	gentity_t	*drop;
 
 	//TarasciiMadness turned off weapons dropping on my gametype.
-#if defined(TARASCIIMADNESS)
 	return;
-#else	
-
+#if 0
 	if (level.gametype == GT_SIEGE)
 	{ //just don't drop anything then
 		return;
@@ -657,7 +655,7 @@ void TossClientItems( gentity_t *self ) {
 			}
 		}
 	}
-	#endif
+#endif
 }
 
 
@@ -5534,7 +5532,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 			targ->die (targ, inflictor, attacker, take, mod);
 			G_ActivateBehavior( targ, BSET_DEATH );
 
-#ifdef TARASCIIMADNESS
+			//TarasciiMadness barrel explosion damage.
 			if (targ->client)
 			{
 				if (targ->client->sess.sessionTeam == TEAM_RED && damage > targ->client->ps.stats[STAT_HEALTH] && targ->playerState->duelTime)
@@ -5566,7 +5564,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, vec3_
 					Tarascii_ResetEplodeClick(targ->s.clientNum);
 				}
 			}
-#endif
 
 			return;
 		}

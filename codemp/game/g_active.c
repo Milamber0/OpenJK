@@ -3466,12 +3466,11 @@ void ClientThink_real( gentity_t *ent ) {
 		&& !(client->ps.eFlags2&EF2_HELD_BY_MONSTER)//can't respawn while being eaten
 		&& ent->s.eType != ET_NPC ) {
 
-#ifdef TARASCIIMADNESS
-			if (client->sess.sessionTeam == TEAM_BLUE)
-			{
-				SetTeamQuick(ent, TEAM_RED, qfalse);
-			}
-#endif
+		//TarasciiMadness if you were on the Human team upon death, move to Barrel team.
+		if (client->sess.sessionTeam == TEAM_BLUE)
+		{
+			SetTeamQuick(ent, TEAM_RED, qfalse);
+		}
 
 		// wait for the attack button to be pressed
 		if ( level.time > client->respawnTime && !gDoSlowMoDuel ) {

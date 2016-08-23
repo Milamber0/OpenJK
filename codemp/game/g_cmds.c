@@ -534,11 +534,8 @@ Cmd_Kill_f
 */
 void Cmd_Kill_f( gentity_t *ent ) {
 	//TarasciiMadness turned off kill command in my gametype.
-#if defined(TARASCIIMADNESS)
 	trap->SendServerCommand( ent-g_entities, va("print \"Suicide is not allowed in this gametype.\n\"") );
-#else
-	G_Kill( ent );
-#endif
+	//G_Kill( ent );
 }
 
 void Cmd_KillOther_f( gentity_t *ent )
@@ -662,10 +659,9 @@ void SetTeam( gentity_t *ent, char *s ) {
 	specState = SPECTATOR_NOT;
 
 	//TarasciiMadness overwriting how teams are set.
-#if defined(TARASCIIMADNESS)
 	team = Tarascii_GetTeam(ent);
-#else
 
+#if 0
 	if ( !Q_stricmp( s, "scoreboard" ) || !Q_stricmp( s, "score" )  ) {
 		team = TEAM_SPECTATOR;
 		specState = SPECTATOR_FREE; // SPECTATOR_SCOREBOARD disabling this for now since it is totally broken on client side

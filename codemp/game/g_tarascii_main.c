@@ -50,12 +50,12 @@ void Tarascii_WriteSessionData()
 		trap->Cvar_Set( va("sessionTarasciiHasClients%i", i), va("%i", g_tState.clientVersions[i]) );
 	}
 }
-
+ 
 void Tarascii_pickFirstBarrel()
 {
 	do 
 	{
-		g_tState.startingBarrel = random() * MAX_CLIENTS;
+		g_tState.startingBarrel = Q_flrand(0.0f, 1.0f) * MAX_CLIENTS;
 	} while (Q_stricmp(g_entities[g_tState.startingBarrel].classname,"player") != 0);
 }
 
@@ -225,7 +225,7 @@ void Tarascii_SpawnBarrel(vec3_t incPos)
 	VectorCopy( angles, obj->r.currentAngles );
 	VectorCopy( obj->s.angles, obj->s.apos.trBase );
 
-	rnd = crandom() * 1000;
+	rnd = Q_flrand(-1.0f, 1.0f) * 1000;
 	obj->r.currentAngles[1] = rnd;
 	obj->s.angles[1] = rnd;
 	obj->s.apos.trBase[1] = rnd;
@@ -272,7 +272,7 @@ void Tarascii_RandomJKALocation(vec3_t outLocation)
 		minRand = g_tState.mapBoundPointsMin[i] - extraArea;
 		range = maxRand - minRand;
 
-		outLocation[i] = range * (random()) + minRand;
+		outLocation[i] = range * Q_flrand(0.0f, 1.0f) + minRand;
 	}
 }
 
@@ -406,7 +406,7 @@ void Tarascii_BarrelPlacement()
 				while (barrelPositionList->next != NULL) // Make sure we're on the last element in the list.
 				{
 					// Check if the point chosen is too close to one of the already stored positions.
-					if (Distance(groundTrace.endpos, barrelPositionList->coordinate) < ((random() * 150) + 40))
+					if (Distance(groundTrace.endpos, barrelPositionList->coordinate) < ((Q_flrand(0.0f, 1.0f) * 150) + 40))
 					{
 						isAvailable = qfalse;
 						break;
@@ -594,7 +594,7 @@ void Tarascii_ClientSpawn(gentity_t* ent)
 			// Pick a random barrel to give the player.
 			while (qtrue)
 			{
-				barrelNum = random() * (MAX_GENTITIES - (MAX_CLIENTS + BODY_QUEUE_SIZE)) + (MAX_CLIENTS + BODY_QUEUE_SIZE);
+				barrelNum = Q_flrand(0.0f, 1.0f) * (MAX_GENTITIES - (MAX_CLIENTS + BODY_QUEUE_SIZE)) + (MAX_CLIENTS + BODY_QUEUE_SIZE);
 
 				if (Q_stricmp(g_entities[barrelNum].classname,"tarasciiBarrel") == 0)
 				{
