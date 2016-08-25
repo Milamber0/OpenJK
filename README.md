@@ -1,100 +1,46 @@
-# OpenJK
+![Alt text](https://dl.dropboxusercontent.com/u/100824046/jofstuff/TarasciiMadness/media/tarascii_title.png "Tarascii Madness")
 
-OpenJK is an effort by the JACoders group to maintain and improve the game engines on which the Jedi Academy (JA) and Jedi Outcast (JO) games run on, while maintaining *full backwards compatibility* with the existing games. *This project does not attempt to rebalance or otherwise modify core gameplay*.
+This mod was created by: Stéphane "Milamber" Roblin. 
+Email: milamber.nr@gmail.com
 
-Our aims are to:
-* Improve the stability of the engine by fixing bugs and improving performance.
-* Provide a clean base from which new JO and JA code modifications can be made.
-* Make available this engine to more operating systems. To date, we have ports on Linux and OS X.
-
-Currently, the most stable portion of this project is the Jedi Academy multiplayer code, with the single player code in a reasonable state.
-
-Rough support for Jedi Outcast single player is also available, however this should be considered heavily work in progress. This is not currently actively worked on or tested. OpenJK does not have Jedi Outcast multiplayer support.
-
-Please use discretion when making issue requests on GitHub. The [JKHub sub-forum](http://jkhub.org/forum/51-discussion/) is a better place for support queries, discussions, and feature requests.
-
-[![IRC](https://img.shields.io/badge/irc-%23JACoders-brightgreen.svg)](http://unic0rn.github.io/tiramisu/jacoders/)
-[![Forum](https://img.shields.io/badge/forum-JKHub.org%20OpenJK-brightgreen.svg)](http://jkhub.org/forum/51-discussion/)
-
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/1153/badge.svg)](https://scan.coverity.com/projects/1153)
-
-| Windows | OSX | Linux x86 | Linux x64 |
-|---------|-----|-----------|-----------|
-| [![Windows Build Status](http://jk.xd.cm/badge.svg?builder=windows)](http://jk.xd.cm/builders/windows) | [ ![OSX Build Status](http://jk.xd.cm/badge.svg?builder=osx)](http://jk.xd.cm/builders/osx) | [ ![Linux x86 Build Status](http://jk.xd.cm/badge.svg?builder=linux)](http://jk.xd.cm/builders/linux) | [ ![Linux x64 Build Status](http://jk.xd.cm/badge.svg?builder=linux-64)](http://jk.xd.cm/builders/linux-64) |
-
-## License
-
-[![License](https://img.shields.io/github/license/JACoders/OpenJK.svg)](https://github.com/JACoders/OpenJK/blob/master/LICENSE.txt)
-
-OpenJK is licensed under GPLv2 as free software. You are free to use, modify and redistribute OpenJK following the terms in LICENSE.txt.
-
-## For players
-
-To install OpenJK, you will first need Jedi Academy installed. If you don't already own the game you can buy it from online stores such as [Steam](http://store.steampowered.com/app/6020/), [Amazon](http://www.amazon.com/Star-Wars-Jedi-Knight-Academy-Pc/dp/B0000A2MCN) or [GOG](https://www.gog.com/game/star_wars_jedi_knight_jedi_academy).
-
-Installing and running OpenJK:
-
-1. [Download the latest build](http://builds.openjk.org) for your operating system.
-2. Extract the contents of the file into the Jedi Academy `GameData/` folder. For Steam users, this will be in `<Steam Folder>/steamapps/common/Jedi Academy/GameData`.
-3. Run `openjk.x86.exe` (Windows), `openjk.i386` (Linux 32-bit), `openjk.x86_64` (Linux 64-bit) or the `OpenJK` application (OS X), depending on your operating system.
- 
-**Linux Instructions**
-
-If you do not have a windows partition and need to download the game base.
-
-1. Download  and Install SteamCMD [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Linux) .
-2. Set the download path using steamCMD, force_install_dir <path> .
-3. Using SteamCMD Set the platform to windows to download any windows game on steam. @sSteamCmdForcePlatformType "windows"
-4. Using SteamCMD download the game,  app_update 6020.
-5. [Download the latest build](http://builds.openjk.org) for your operating system.
-6. Extract the contents of the file into the Jedi Academy `GameData/` folder. For Steam users, this will be in `<Steam Folder>/steamapps/common/Jedi Academy/GameData`.
+TarasciiMadness is a code modification of the game Jedi Knight Jedi Academy, based on the OpenJK project by the JACoders.
 
 
-**OS X Instructions**
+The mod offers a new gametype based on the Team Free For All gametype in Jedi Academy and was inspiried by "Suicide Barrels" a modification for Garry's Mod.
 
-If you have the Mac App Store Version of Jedi Academy, follow these steps to get OpenJK runnning under OS X:  
+# The mod
 
-1. Install [Homebrew](http://brew.sh/) if you don't have it.
-2. Open the Terminal app, and enter the command `brew install sdl2`.
-3. Extract the contents of the OpenJK DMG ([Download the latest build](http://builds.openjk.org)) into the game directory `/Applications/Star Wars Jedi Knight: Jedi Academy.app/Contents/`
-4. Run `openJK.app` or `openJK SP.app` 
-5. Savegames, Config Files and Log Files are stored in `/Users/<USER>/Library/Application Support/OpenJK/`
+* 2 teams competing against eachother. 1 Human player team and 1 Barrel player team.
+
+* Human team
+	* Fights using an instant shot sniper rifle with an increased reload time and zoom disabled.
+	* Has the goal to survive until the round timer is reached. The round time is announced at the start of a round or can be found in the menu by pressing Escape *> About.
+	* When they manage to shoot an enemy barrel the resulting explosion is smaller in range and damage.
+
+* Barrel team
+	* Upon spawning as a barrel you possess one of many randomly placed barrels spread across the map.
+	* Because of these barrels spread across the map you have the ability to hide in plain sight.
+	* Fights using an explosive ability that detonates the Barrel player 1 second after being triggered and the warning sound has played.
+	* Has the goal to blow up every Human player, turning them into Barrel players, before the round timelimit has been reached.
+
+* This mod does not required premade maps made specifically for the mod to work. The mod finds the size of the map and places barrels onto the maps valid surfaces for as long as there are available spots for it to find and the entity limit of the engine itself has not been reached.
+
+* These barrels relocate themselves between each round making it impossible to memorize each fake barrel's location.
+
+* Instead of spawning into the world abruptly the Barrel players instead possess a fake barrel already placed on the map, making spawn killing a barrel less likely. The barrel that was possessed will respawn itself when it's no longer being controlled by a Barrel player.
+
+## New admin commands
+* tm_debugAllowJoin defaults to 0 valid value 1. Allows you to join a game without having a minimum of 2 players. Will interfere with normal gameplay so should be turned off when not running tests.
+* tm_barrelDensity 1*100 valid values defaults to 25. This represents the percentage concentration of barrels on the map. If you feel the map has too many or too few barrels you can increase or decrease this number and restart the round using the default command map_restart. It's recommended to stay away from the higher percentages on smaller maps because a high concentration of barrels can be stressful for the game engine.
+* tm_rounds defaults to 5. This is how many rounds you play on the current map before moving on to the next map in the map cycle, if no map cycle has been added to the server it will repeat the same map.
 
 
-## For Developers
+#Installation:
 
-### Building OpenJK
-* [Compilation guide](https://github.com/JACoders/OpenJK/wiki/Compilation-guide)
-* [Debugging guide](https://github.com/JACoders/OpenJK/wiki/Debugging)
+##Windows:
+In your Jedi Academy's GameData folder, create a TarasciiMadness folder and place the jampgamex86.dll in the folder. Add the commandline "+set fs_game TarasciiMadness" to load the mod on your server.
 
-### Contributing to OpenJK
-* [Fork](https://github.com/JACoders/OpenJK/fork) the project on GitHub
-* Create a new branch and make your changes
-* Send a [pull request](https://help.github.com/articles/creating-a-pull-request) to upstream (JACoders/OpenJK)
+To install the clientplugin, which is required to avoid seeing lag in your own movement as a Barrel player, create the same folder structure as mentioned above and place the cgamex86.dll in there. The mod will warn you if you're using an outdated version of the plugin compared to the server version, or if you don't have it installed at all.
 
-### Using OpenJK as a base for a new mod
-* [Fork](https://github.com/JACoders/OpenJK/fork) the project on GitHub
-* Change the GAMEVERSION define in codemp/game/g_local.h from "OpenJK" to your project name
-* If you make a nice change, please consider back-porting to upstream via pull request as described above. This is so everyone benefits without having to reinvent the wheel for every project.
-
-### Deciphering buildbot's output
-* Pick the build from the operating system builder you're interested in at the [builders](https://jk.xd.cm/builders) page.
-* Click on stdio for the Steps to see the command executed and the result.
-* The command is at the very top, the output starts below.
-
-## Maintainers (in alphabetical order)
-
-* Ensiform
-* Razish
-* Xycaleth
-
-## Significant contributors (in alphabetical order)
-
-* eezstreet
-* exidl
-* ImperatorPrime
-* mrwonko
-* redsaurus
-* Scooper
-* Sil
-* smcv
+##Linux:
+Same procedure as Windows but use the jampgamei386.so and cgamei386.so files.
