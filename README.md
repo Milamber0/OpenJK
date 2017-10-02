@@ -1,4 +1,4 @@
-![Alt text](https://dl.dropboxusercontent.com/u/100824046/jofstuff/TarasciiMadness/media/tarascii_title.png "Tarascii Madness")
+![Alt text](https://i.imgur.com/XESMs7T.png "Tarascii Madness")
 
 This mod was created by: Stéphane "Milamber" Roblin. 
 Email: milamber.nr@gmail.com
